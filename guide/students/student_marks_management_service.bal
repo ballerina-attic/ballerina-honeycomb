@@ -21,8 +21,6 @@ import ballerina/mysql;
 import ballerina/observe;
 import ballerina/runtime;
 
-
-
 type Marks record {
     int studentId;
     int maths;
@@ -73,7 +71,6 @@ public function findMarks(int stuId) returns (json) {
     json status = {};
     string sqlString = "SELECT * FROM marks WHERE student_Id = " + stuId;
     // Getting student marks of the given ID.
-    io:println(stuId);
     // Invoking select operation in testDB.
     var ret = testDB1->select(sqlString, Marks, loadToMemory = true);
 

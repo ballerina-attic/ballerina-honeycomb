@@ -177,6 +177,7 @@ service<http:Service> StudentData bind listener1 {
         // Pass the obtained json object to the request.
         response.setJsonPayload(ret);
         _ = httpConnection->respond(response);
+        // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan(spanId = -1, "tot_requests", <string>requestCounts);
         _ = observe:addTagToSpan(spanId = -1, "error_counts", <string>errors);
     }
@@ -301,22 +302,20 @@ public function deleteData(int stuId) returns (json) {
     return status;
 }
 
-
-  # `getId()` is a function to get the Id of the student added in latest.
-  # + mobNo - This is the mobile number of the student added which is passed as parameter to build up the query.
-  # + return -  This function returns either a table which has only one row of the student details or an error.
-
+# `getId()` is a function to get the Id of the student added in latest.
+# + mobNo - This is the mobile number of the student added which is passed as parameter to build up the query.
+# + return -  This function returns either a table which has only one row of the student details or an error.
 
 // Function to get the generated Id of the student recently added.
 public function getId(int mobNo) returns (table|error) {
-    // Select data from database by invoking select action.
-    var ret2 = testDB->select("Select * FROM student WHERE mobNo = " + mobNo, Student, loadToMemory = true);
-    table<Student> dt;
-    match ret2 {
-        table tableReturned => dt = tableReturned;
-        error e => io:println("Select data from student table failed: " + e.message);
-    }
-    return dt;
+//Select data from database by invoking select action.
+var ret2 = testDB->select("Select * FROM student WHERE mobNo = " + mobNo, Student, loadToMemory = true);
+table<Student> dt;
+match ret2 {
+table tableReturned => dt = tableReturned;
+error e => io:println("Select data from student table failed: " + e.message);
+}
+return dt;
 }
 
 
