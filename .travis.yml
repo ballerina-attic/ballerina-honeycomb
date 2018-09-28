@@ -30,9 +30,17 @@ script:
 
 - unzip -q $DISTRIBUTION_NAME.zip
 
+- MYSQL_CONNECTOR_VERSION=mysql-connector-java-5.1.45
+
+- wget http://dev.mysql.com/get/Downloads/Connector-J/$MYSQL_CONNECTOR_VERSION.tar.gz
+
+- tar xzf $MYSQL_CONNECTOR_VERSION.tar.gz
+
 - export PATH=$PATH:$(pwd)/$DISTRIBUTION_NAME/bin
 
 - ballerina version
+
+- mv $MYSQL_CONNECTOR_VERSION/$MYSQL_CONNECTOR_VERSION-bin.jar $DISTRIBUTION_NAME/bre/lib
 
 - cd guide
 
