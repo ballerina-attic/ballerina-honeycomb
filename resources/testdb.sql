@@ -21,6 +21,10 @@ SET time_zone = "+00:00";
 --
 -- Database: `testdb`
 --
+ CREATE DATABASE IF NOT EXISTS testdb;
+
+ -- Switch to EMPLOYEE_RECORDS database
+ USE testdb;
 
 -- --------------------------------------------------------
 
