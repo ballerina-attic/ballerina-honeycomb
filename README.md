@@ -1,3 +1,4 @@
+  [![Build Status](https://travis-ci.org/Shairam/ballerina-honeycomb.svg?branch=master)](https://travis-ci.org/Shairam/ballerina-honeycomb)
   
 ## Integration with Honeycomb
 
