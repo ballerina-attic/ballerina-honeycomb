@@ -21,7 +21,7 @@ The following are the sections available in this guide.
 
 To perform this integration with Honeycomb,  a real world use case of a very simple student management system is used.
 
-![Honeycomb](images/observe.png "Ballerina-Honeycomb")
+![Honeycomb](images/ballerina-honeycomb.svg "Ballerina-Honeycomb")
 
 - **Make Requests** : To perform actions on student  management service, a console based client program has been written in Ballerina for your ease of making requests.
 
