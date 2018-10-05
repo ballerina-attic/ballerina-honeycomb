@@ -52,10 +52,11 @@ service<http:Service> MarksData bind marksServiceListener {
     }
 }
 
- # `findMarks()` is a function to find a student's marks from the marks record database.
+ # `findMarks()`is a function to find a student's marks from the marks record database.
+ #
  #  + stuId -  This is the id of the student.
  # + return - This function returns a json object. If data is added it returns json containing a status and id of student added.
- #          If data is not added , it returns the json containing a status and error message.
+ #            If data is not added , it returns the json containing a status and error message.
 
 public function findMarks(int stuId) returns (json) {
     json status = {};

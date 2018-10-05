@@ -228,6 +228,7 @@ service<http:Service> StudentData bind studentServiceListener {
 
 // Function to insert values to database.
   # `insertData()` is a function to add data to student records database.
+  #
   # + name - This is the name of the student to be added.
   # + age -Student age.
   # + mobNo -Student mobile number.
@@ -273,9 +274,10 @@ public function insertData(string name, int age, int mobNo, string address) retu
 
 // Function to delete student data from database.
   # `deleteData()` is a function to delete a student's data from student records database.
+  #
   # + stuId - This is the id of the student to be deleted.
-  # + return - This function returns a json object. If data is deleted it returns json containing a status.
-  #              If data is not deleted , it returns the json containing a status and error message.
+  # + return -This function returns a json object. If data is deleted it returns json containing a status.
+  #           If data is not deleted , it returns the json containing a status and error message.
 
 public function deleteData(int stuId) returns (json) {
     json status = {};
@@ -302,8 +304,9 @@ public function deleteData(int stuId) returns (json) {
 }
 
 # `getId()` is a function to get the Id of the student added in latest.
+#
 # + mobNo - This is the mobile number of the student added which is passed as parameter to build up the query.
-# + return -  This function returns either a table which has only one row of the student details or an error.
+# + return -This function returns either a table which has only one row of the student details or an error.
 
 // Function to get the generated Id of the student recently added.
 public function getId(int mobNo) returns table|error {
