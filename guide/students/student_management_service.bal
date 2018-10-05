@@ -30,12 +30,12 @@ type Student record {
     string address;
 };
 
-// End point for marks details client.
+// Endpoint for marks details client.
 endpoint http:Client marksServiceEP {
     url: " http://localhost:9191"
 };
 
-// Endpoint for mysql client.
+// Endpoint for MySQL client.
 public endpoint mysql:Client databaseEP {
     host: "localhost",
     port: 3306,
@@ -101,7 +101,7 @@ service<http:Service> StudentData bind studentServiceListener {
 
         int spanId2 = observe:startRootSpan("Database call span");
         var returnValue = databaseEP->select("SELECT * FROM student", Student, loadToMemory = true);
-        //Sending a request to mysql endpoint and getting a response with required data table.
+        //Sending a request to MySQL endpoint and getting a response with required data table.
         _ = observe:finishSpan(spanId2);
         // A table is declared with Student as its type.
         table<Student> dataTable;
