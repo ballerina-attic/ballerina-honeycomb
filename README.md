@@ -80,15 +80,16 @@ reporter.api.version="v1"
 reporter.compression.enabled=false
 ```
 
-- Then open the terminal and navigate to `ballerina-honeycomb/guide` and run Ballerina project initializing toolkit.
+- Open the terminal, navigate to `ballerina-honeycomb/guide`, and run Ballerina project initializing toolkit.
 
 ``
    $ ballerina init
 ``
-- Also you need to clone and build the ballerina-zipkin-extension in the following repository [https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules.](https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules) 
+- Clone and build the ballerina-zipkin-extension in the following repository [https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules.](https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules) 
 
-- After building  move to `ballerina-zipkin-extension>/target/distribution/` and copy all the jar files to your `bre/lib` folder in your ballerina distribution.
-### Development of student and marks service with Honeycomb
+- After building  move to `ballerina-zipkin-extension>/target/distribution/` and copy all the jar files to your `bre/lib` folder in your Ballerina distribution.
+
+### Development of student management and marks management services with Honeycomb
 
 Now let us look into the implementation of the student management with observability.
 
@@ -127,12 +128,12 @@ type Student record {
     string address;
 };
 
-// End point for marks details client.
+// Endpoint for marks details client.
 endpoint http:Client marksServiceEP {
     url: " http://localhost:9191"
 };
 
-// Endpoint for mysql client.
+// Endpoint for MySQL client.
 public endpoint mysql:Client databaseEP {
     host: "localhost",
     port: 3306,
@@ -198,7 +199,7 @@ service<http:Service> StudentData bind studentServiceListener {
 
         int spanId2 = observe:startRootSpan("Database call span");
         var returnValue = databaseEP->select("SELECT * FROM student", Student, loadToMemory = true);
-        //Sending a request to mysql endpoint and getting a response with required data table.
+        //Sending a request to MySQL endpoint and getting a response with required data table.
         _ = observe:finishSpan(spanId2);
         // A table is declared with Student as its type.
         table<Student> dataTable;
