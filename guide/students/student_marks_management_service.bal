@@ -28,18 +28,8 @@ type Marks record {
     int science;
 };
 
-endpoint mysql:Client testDB1 {
-    host: "localhost",
-    port: 3306,
-    name: "testdb",
-    username: "root",
-    password: "",
-    poolOptions: { maximumPoolSize: 5 },
-    dbOptions: { useSSL: false }
-};
-
 // This service listener.
-endpoint http:Listener listener {
+endpoint http:Listener marksServiceListener{
     port: 9191
 };
 
@@ -47,7 +37,7 @@ endpoint http:Listener listener {
 @http:ServiceConfig {
     basePath: "/marks"
 }
-service<http:Service> MarksData bind listener {
+service<http:Service> MarksData bind marksServiceListener {
     @http:ResourceConfig {
         methods:["GET"],
         path: "/getMarks/{stuId}"
@@ -58,7 +48,7 @@ service<http:Service> MarksData bind listener {
         json result = findMarks(untaint stuId);
         // Pass the obtained json object to the requested client.
         response.setJsonPayload(untaint result);
-        _ = httpConnection->respond(response);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
     }
 }
 
@@ -72,7 +62,7 @@ public function findMarks(int stuId) returns (json) {
     string sqlString = "SELECT * FROM marks WHERE student_Id = " + stuId;
     // Getting student marks of the given ID.
     // Invoking select operation in testDB.
-    var ret = testDB1->select(sqlString, Marks, loadToMemory = true);
+    var ret = databaseEP->select(sqlString, Marks, loadToMemory = true);
 
     // Assigning data obtained from db to a table.
     table<Marks> datatable;

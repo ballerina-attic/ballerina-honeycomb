@@ -31,12 +31,12 @@ type Student record {
 };
 
 // End point for marks details client.
-endpoint http:Client marksService {
+endpoint http:Client marksServiceEP {
     url: " http://localhost:9191"
 };
 
 // Endpoint for mysql client.
-endpoint mysql:Client testDB {
+public endpoint mysql:Client databaseEP {
     host: "localhost",
     port: 3306,
     name: "testdb",
@@ -47,7 +47,7 @@ endpoint mysql:Client testDB {
 };
 
 // This service listener.
-endpoint http:Listener listener1 {
+endpoint http:Listener studentServiceListener {
     port: 9292
 };
 
@@ -55,7 +55,7 @@ endpoint http:Listener listener1 {
 @http:ServiceConfig {
     basePath: "/records"
 }
-service<http:Service> StudentData bind listener1 {
+service<http:Service> StudentData bind studentServiceListener {
 
     int errors = 0;
     int requestCounts = 0;
@@ -69,16 +69,15 @@ service<http:Service> StudentData bind listener1 {
         // Initialize an empty http response message.
         requestCounts++;
         http:Response response;
-        Student stuData;
 
         // Accepting the Json payload sent from a request.
-        var payloadJson = check request.getJsonPayload();
+        json payloadJson = check request.getJsonPayload();
 
         //Converting the payload to Student type.
-        stuData = check <Student>payloadJson;
+        Student studentData = check <Student>payloadJson;
 
         // Calling the function insertData to update database.
-        json ret = insertData(stuData.name, stuData.age, stuData.mobNo, stuData.address);
+        json ret = insertData (studentData.name, studentData.age, studentData.mobNo, studentData.address);
 
         // Send the response back to the client with the returned json value from insertData function.
         response.setJsonPayload(ret);
@@ -96,12 +95,12 @@ service<http:Service> StudentData bind listener1 {
     // View students resource is to get all the students details and send to the requested user.
     viewStudents(endpoint httpConnection, http:Request request) {
         requestCounts++;
-        int chSpanId = check observe:startSpan("Check span 1");
+        int childSpanId = check observe:startSpan("Obtain details span");
         http:Response response;
         json status = {};
 
         int spanId2 = observe:startRootSpan("Database call span");
-        var selectRet = testDB->select("SELECT * FROM student", Student, loadToMemory = true);
+        var selectRet = databaseEP->select("SELECT * FROM student", Student, loadToMemory = true);
         //Sending a request to mysql endpoint and getting a response with required data table.
         _ = observe:finishSpan(spanId2);
         // A table is declared with Student as its type.
@@ -132,9 +131,9 @@ service<http:Service> StudentData bind listener1 {
         }
         // Sending back the converted json data to the request made to this service.
         response.setJsonPayload(untaint status);
-        _ = httpConnection->respond(response);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
 
-        _ = observe:finishSpan(chSpanId);
+        _ = observe:finishSpan(childSpanId);
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>requestCounts);
         _ = observe:addTagToSpan("error_counts", <string>errors);
@@ -157,7 +156,7 @@ service<http:Service> StudentData bind listener1 {
         _ = observe:addTagToSpan("tot_requests", <string>requestCounts);
         log:printError("error test");
         response.setTextPayload("Test Error made");
-        _ = httpConnection->respond(response);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
     }
 
     @http:ResourceConfig {
@@ -176,7 +175,7 @@ service<http:Service> StudentData bind listener1 {
 
         // Pass the obtained json object to the request.
         response.setJsonPayload(ret);
-        _ = httpConnection->respond(response);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan(spanId = -1, "tot_requests", <string>requestCounts);
         _ = observe:addTagToSpan(spanId = -1, "error_counts", <string>errors);
@@ -195,7 +194,7 @@ service<http:Service> StudentData bind listener1 {
         // Self defined span for observability purposes.
         int firstsp = check observe:startSpan("First span");
         // Request made for obtaining marks of the student with the respective stuId to marks Service.
-        var requ = marksService->get("/marks/getMarks/" + untaint stuId);
+        var requ = marksServiceEP->get("/marks/getMarks/" + untaint stuId);
 
         match requ {
             http:Response response2 => {
@@ -219,7 +218,7 @@ service<http:Service> StudentData bind listener1 {
         _ = observe:finishSpan(firstsp);
         //Sending the Json to the client.
         response.setJsonPayload(untaint result);
-        _ = httpConnection->respond(response);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
 
         //  The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>requestCounts);
@@ -241,7 +240,7 @@ public function insertData(string name, int age, int mobNo, string address) retu
     int uid;
     string sqlString = "INSERT INTO student (name, age, mobNo, address) VALUES (?,?,?,?)";
     // Insert data to SQL database by invoking update action.
-    var ret = testDB->update(sqlString, name, age, mobNo, address);
+    var ret = databaseEP->update(sqlString, name, age, mobNo, address);
 
     // Use match operator to check the validity of the result from database.
     match ret {
@@ -283,7 +282,7 @@ public function deleteData(int stuId) returns (json) {
     string sqlString = "DELETE FROM student WHERE id = ?";
 
     // Delete existing data by invoking update action.
-    var ret = testDB->update(sqlString, stuId);
+    var ret = databaseEP->update(sqlString, stuId);
     io:println(ret);
     match ret {
         int updateRowCount => {
@@ -307,15 +306,15 @@ public function deleteData(int stuId) returns (json) {
 # + return -  This function returns either a table which has only one row of the student details or an error.
 
 // Function to get the generated Id of the student recently added.
-public function getId(int mobNo) returns (table|error) {
-//Select data from database by invoking select action.
-var ret2 = testDB->select("Select * FROM student WHERE mobNo = " + mobNo, Student, loadToMemory = true);
-table<Student> dt;
-match ret2 {
-table tableReturned => dt = tableReturned;
-error e => io:println("Select data from student table failed: " + e.message);
-}
-return dt;
+public function getId(int mobNo) returns table|error {
+    //Select data from database by invoking select action.
+    var ret2 = databaseEP->select("Select * FROM student WHERE mobNo = " + mobNo, Student, loadToMemory = true);
+    table<Student> dt;
+    match ret2 {
+        table tableReturned => dt = tableReturned;
+        error e => io:println("Select data from student table failed: " + e.message);
+    }
+    return dt;
 }
 
 

@@ -22,7 +22,7 @@ endpoint http:Client studentData {
     url: " http://localhost:9292"
 };
 
-public function main(string... args) {
+public function main() {
     http:Request req = new;
     int operation = 0;
     while (operation != 6) {
@@ -37,38 +37,33 @@ public function main(string... args) {
 
         // Read user's choice.
         string choice = io:readln("Enter choice 1 - 5: ");
-        if (!isInteger(choice)){
+        if (!isInteger(choice)) {
             io:println("Choice must be of a number");
             io:println();
             continue;
         }
-
         operation = check <int>choice;
         // Program runs until the user inputs 6 to terminate the process.
         if (operation == 6) {
             break;
         }
-        // User chooses to add a student.
         if (operation == 1) {
+            // User chooses to add a student.
             addStudent(req);
-        }
-        // User chooses to list down all the students.
-        else if (operation == 2) {
+        }  else if (operation == 2) {
+            // User chooses to list down all the students.
             viewAllStudents();
-        }
-        // User chooses to delete a student by Id.
-        else if (operation == 3) {
+        } else if (operation == 3) {
+            // User chooses to delete a student by Id.
             deleteStudent();
-        }
-        // User chooses to make a mock error.
-        else if (operation == 4) {
+        } else if (operation == 4) {
+            // User chooses to make a mock error.
             makeError();
-        }
-        else if (operation == 5){
+        } else if (operation == 5){
+            // User chooses to get the marks of a particular student.
           getMarks();
-        }
-        else {
-            io:println("Invalid choice");
+        } else {
+            io:println("Invalid choice \n");
         }
     }
 }
@@ -117,8 +112,8 @@ function addStudent(http:Request req) {
 
 function viewAllStudents() {
     // Sending a request to list down all students and get the response from it.
-    var requ = studentData->post("/records/viewAll", null);
-    match requ {
+    var request = studentData->post("/records/viewAll", null);
+    match request {
         http:Response response => {
             var msg = response.getJsonPayload();
             // Obtaining the result from the response received.
@@ -128,18 +123,15 @@ function viewAllStudents() {
                     // Validate to check if records are available.
                     if (lengthof jsonPL >= 1) {
                         int i;
-                        io:println();
                         // Loop through the received json array and display data.
                         while (i < lengthof jsonPL) {
                             message = "Student Name: " + jsonPL[i]["name"] .toString() + ", " + " Student Age: " + jsonPL[i]["age"] .toString();
                             io:println(message);
                             i++;
                         }
-                        io:println();
-                    }
-                    else {
+                    } else {
                         // Notify user if no records are available.
-                        message = "Student record is empty";
+                        message = "\n Student record is empty";
                         io:println(message);
                     }
                 }
@@ -154,19 +146,18 @@ function viewAllStudents() {
     }
 }
 
-function deleteStudent(){
+function deleteStudent() {
     // Get student id.
     var id = io:readln("Enter student id: ");
     // Request made to find the student with the given id and get the response from it.
-    var requ = studentData->get("/records/deleteStu/" + check <int>id);
-    match requ {
+    var request = studentData->get("/records/deleteStu/" + check <int>id);
+    match request {
         http:Response response => {
             var msg = response.getJsonPayload();
             // Obtaining the result from the response received.
             match msg {
                 json jsonPL => {
-                    string message;
-                    message = jsonPL["Status"].toString();
+                    string message = jsonPL["Status"].toString();
                     io:println("\n"+ message + "\n");
                 }
                 error err => {
@@ -175,15 +166,14 @@ function deleteStudent(){
             }
         }
         error er => {
-            io:println(er.message);
             log:printError(er.message, err = er);
         }
     }
 }
 
 function makeError() {
-    var requ = studentData->get("/records/testError");
-    match requ {
+    var request = studentData->get("/records/testError");
+    match request {
         http:Response response => {
             var msg = response.getTextPayload();
             // Obtaining the result from the response received.
@@ -202,12 +192,12 @@ function makeError() {
     }
 }
 
-function getMarks(){
+function getMarks() {
     // Get student id.
     var id = io:readln("Enter student id: ");
     // Request made to get the marks of the student with given id and get the response from it.
-    var requ = studentData->get("/records/getMarks/" + check <int>id);
-    match requ {
+    var request = studentData->get("/records/getMarks/" + check <int>id);
+    match request {
         http:Response response => {
             var msg = response.getJsonPayload();
             // Obtaining the result from the response received.
