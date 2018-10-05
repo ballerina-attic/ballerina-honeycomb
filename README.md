@@ -4,7 +4,7 @@
 
 Honeycomb is a tool used to investigate how well your system works in various conditions (for example - high traffic). Through Honeycomb, you can collect data pertaining to your software that can be broken down into various entities. You can observe the performance of each of these entities specifically.
      
-     This guide provides instructions on how Ballerina can be used to integrate with Honeycomb.
+> This guide provides instructions on how Ballerina can be used to integrate with Honeycomb.
 
 The following are the sections available in this guide.
 
