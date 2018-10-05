@@ -74,13 +74,13 @@ service<http:Service> StudentData bind studentServiceListener {
         json payloadJson = check request.getJsonPayload();
 
         //Converting the payload to Student type.
-        Student studentData = check <Student>payloadJson;
+        Student studentDetails = check <Student>payloadJson;
 
         // Calling the function insertData to update database.
-        json ret = insertData (studentData.name, studentData.age, studentData.mobNo, studentData.address);
+        json returnValue = insertData (studentDetails.name, studentDetails.age, studentDetails.mobNo, studentDetails.address);
 
         // Send the response back to the client with the returned json value from insertData function.
-        response.setJsonPayload(ret);
+        response.setJsonPayload(returnValue);
         _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e)};
 
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
