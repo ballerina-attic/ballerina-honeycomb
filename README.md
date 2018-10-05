@@ -2,9 +2,10 @@
   
 ## Integration with Honeycomb
 
- Honeycomb is a tool used for investigating on how well your system product is working in various conditions (for example - high traffic). Through honeycomb we are able to collect data of your own software which can be broken down into various entities to observe its performance specifically. [Read more about Honeycomb.](#about-honeycomb)
- 
- 
+Honeycomb is a tool used to investigate how well your system works in various conditions (for example - high traffic). Through Honeycomb, you can collect data pertaining to your software that can be broken down into various entities. You can observe the performance of each of these entities specifically.
+     
+     This guide provides instructions on how Ballerina can be used to integrate with Honeycomb.
+
 The following are the sections available in this guide.
 
 - [What you'll build](#what-you’ll-build)
@@ -15,11 +16,15 @@ The following are the sections available in this guide.
      - [Traces](#views-of-traces)
      - [Metrics](#metrics)
 
-
-
-## What you’ll build 
-
+## What you’ll build
 To perform this integration with Honeycomb,  a real world use case of a very simple student management system is used.
+This system will illustrate the manipulation of student details in a school/college management system. The administrator will be able to perform the following actions in this service.
+
+    - Add a student's details to the system.
+    - List down all the students' details who are registered in the system.
+    - Delete a student's details from the system by providing student ID.
+    - Generate a mock error (for observability purposes).
+    - Get a student's marks list by providing student ID.
 
 ![Honeycomb](images/ballerina-honeycomb.svg "Ballerina-Honeycomb")
 
@@ -29,20 +34,16 @@ To perform this integration with Honeycomb,  a real world use case of a very sim
  
 - [Ballerina Distribution](https://ballerina.io/learn/getting-started/)
 - [Docker](https://docs.docker.com/engine/installation/)
-- [MYSQL](https://github.com/Shairam/Ballerina-Honeycomb/blob/master/resources/testdb.sql)
+- [MySQL](https://github.com/ballerina-guides/ballerina-honeycomb/blob/master/resources/testdb.sql)
 - A Text Editor or an IDE 
 
 ## Implementation
 
-> If you want to skip the basics, you can download the GitHub repo and continue from the "Testing" section.
+> If you want to skip the basics, you can download the GitHub repo and continue from the [Testing](#testing) section.
 
-### Implementing database
- - Start MYSQL server in your local machine.
- - Create a database with name `testdb` in your MYSQL localhost. If you want to skip the database implementation, then directly import the [testdb.sql](https://github.com/Shairam/Ballerina-Honeycomb/blob/master/resources/testdb.sql) file into your localhost. You can find it in the Github repo.
- 
- 
- 
-
+### Implementing the database
+ - Start MySQL server in your local machine.
+ - Create a database with name `testdb` in your MySQL localhost. If you want to skip the database implementation, then directly import the [testdb.sql](https://github.com/ballerina-guides/ballerina-honeycomb/blob/master/resources/testdb.sql) file into your localhost. You can find it in the Github repo.
 ### Create the project structure
         
  For the purpose of this guide, let's use the following package structure.
@@ -60,7 +61,7 @@ To perform this integration with Honeycomb,  a real world use case of a very sim
 
 - Create the above directories in your local machine, along with the empty `.bal` files.
 
-- You have to add the following lines in your [ballerina.conf](https://github.com/Shairam/Ballerina-Honeycomb/blob/master/ballerina.conf) to send the service traces to Honeycomb in Zipkin format using Opentracing.
+- You have to add the following lines in your [ballerina.conf](https://github.com/ballerina-guides/ballerina-honeycomb/blob/master/ballerina.conf) to send the service traces to Honeycomb in Zipkin format using Opentracing.
 
 ```ballerina
 [b7a.observability.tracing]
