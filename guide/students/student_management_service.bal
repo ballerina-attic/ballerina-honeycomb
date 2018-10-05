@@ -81,7 +81,7 @@ service<http:Service> StudentData bind studentServiceListener {
 
         // Send the response back to the client with the returned json value from insertData function.
         response.setJsonPayload(ret);
-        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e);
+        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e)};
 
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>requestCounts);
@@ -121,8 +121,8 @@ service<http:Service> StudentData bind studentServiceListener {
         // Table is converted to json.
         var jsonConversionValue = <json>dataTable;
         match jsonConversionValue {
-            json jsonRes => {
-                status = jsonConversionValue;
+            json jsonResult => {
+                status = jsonResult;
             }
             error e => {
                 status = { "Status": "Data Not available", "Error": e.message };
