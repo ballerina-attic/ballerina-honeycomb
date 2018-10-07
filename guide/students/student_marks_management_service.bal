@@ -46,7 +46,7 @@ service<http:Service> MarksData bind marksServiceListener {
     getMarks(endpoint httpConnection, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
-        // Pass the obtained json object to the requested client.
+        // Pass the obtained JSON object to the requested client.
         response.setJsonPayload(untaint result);
         _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
     }
@@ -55,8 +55,8 @@ service<http:Service> MarksData bind marksServiceListener {
  # `findMarks()`is a function to find a student's marks from the marks record database.
  #
  #  + stuId -  This is the id of the student.
- # + return - This function returns a json object. If data is added it returns json containing a status and id of student added.
- #            If data is not added , it returns the json containing a status and error message.
+ # + return - This function returns a JSON object. If data is added it returns JSON containing a status and id of student added.
+ #            If data is not added , it returns the JSON containing a status and error message.
 
 public function findMarks(int stuId) returns (json) {
     json status = {};
@@ -75,7 +75,7 @@ public function findMarks(int stuId) returns (json) {
             return status;
         }
     }
-    // Converting the obtained data in table format to json data.
+    // Converting the obtained data in table format to JSON data.
     var jsonConversionValue = <json>dataTable;
     match jsonConversionValue {
         json jsonResult => {
