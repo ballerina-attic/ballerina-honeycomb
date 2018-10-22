@@ -1,6 +1,6 @@
   [![Build Status](https://travis-ci.org/ballerina-guides/ballerina-honeycomb.svg?branch=master)](https://travis-ci.org/ballerina-guides/ballerina-honeycomb)
   
-## Integration with Honeycomb
+# Integration with Honeycomb
 
 Honeycomb is a tool used to investigate how well your system works in various conditions (for example - high traffic). Through Honeycomb, you can collect data pertaining to your software that can be broken down into various entities. You can observe the performance of each of these entities specifically.
      
