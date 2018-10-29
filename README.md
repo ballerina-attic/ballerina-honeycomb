@@ -1,4 +1,4 @@
-  [![Build Status](https://travis-ci.org/ballerina-guides/ballerina-honeycomb.svg?branch=master)](https://travis-ci.org/ballerina-guides/ballerina-honeycomb)
+[![Build Status](https://travis-ci.org/ballerina-guides/ballerina-honeycomb.svg?branch=master)](https://travis-ci.org/ballerina-guides/ballerina-honeycomb)
   
 # Integration with Honeycomb
 
