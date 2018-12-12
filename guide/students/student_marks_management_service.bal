@@ -21,6 +21,7 @@ import ballerina/mysql;
 import ballerina/observe;
 import ballerina/runtime;
 
+
 type Marks record {
     int studentId;
     int maths;
@@ -29,26 +30,28 @@ type Marks record {
 };
 
 // This service listener.
-endpoint http:Listener marksServiceListener{
-    port: 9191
-};
-
+listener http:Listener marksServiceListener = new(9191);
 // Marks data service.
 @http:ServiceConfig {
     basePath: "/marks"
 }
-service<http:Service> MarksData bind marksServiceListener {
+
+service MarksData on marksServiceListener {
     @http:ResourceConfig {
         methods:["GET"],
         path: "/getMarks/{stuId}"
     }
     // Get marks resource used to get student's marks.
-    getMarks(endpoint httpConnection, http:Request request, int stuId) {
+    resource function getMarks(http:Caller httpConnection, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
         // Pass the obtained JSON object to the requested client.
         response.setJsonPayload(untaint result);
-        _ = httpConnection->respond(response) but { error e => log:printError("Error sending response", err = e) };
+        var resResult = httpConnection->respond(response);
+
+        if (resResult is error){
+            log:printError("Error sending response", err = resResult);
+        }
     }
 }
 
@@ -63,28 +66,28 @@ public function findMarks(int stuId) returns (json) {
     string sqlString = "SELECT * FROM marks WHERE student_Id = " + stuId;
     // Getting student marks of the given ID.
     // Invoking select operation in testDB.
-    var returnValue = databaseEP->select(sqlString, Marks, loadToMemory = true);
+    var returnValue = studentDB->select(sqlString, Marks, loadToMemory = true);
 
     // Assigning data obtained from db to a table.
-    table<Marks> dataTable;
-    match returnValue {
-        table tableReturned => dataTable = tableReturned;
-        error err => {
-            log:printError(err.message,err= err);
-            status = { "Status": "Select data from student table failed: ", "Error": err.message };
-            return status;
-        }
+    table<Marks> dataTable = table {};
+
+    if (returnValue is table<Marks>){
+            dataTable = returnValue;
+    }
+    else {
+        log:printError("Error Detected",err= returnValue);
+        status = { "Status": "Select data from student table failed: "};
+        return status;
     }
     // Converting the obtained data in table format to JSON data.
-    var jsonConversionValue = <json>dataTable;
-    match jsonConversionValue {
-        json jsonResult => {
-            status = jsonResult;
-        }
-        error err => {
-            status = { "Status": "Data Not available", "Error": err.message };
-            log:printError(err.message,err = err);
-        }
+    var jsonConversionValue = json.convert(dataTable);
+
+    if (jsonConversionValue is json){
+        status = jsonConversionValue;
+    }
+    else {
+        status = { "Status": "Data Not available"};
+        log:printError("Error Detected",err = jsonConversionValue);
     }
     io:println(status);
     return status;
