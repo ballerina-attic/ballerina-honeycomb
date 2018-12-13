@@ -21,7 +21,7 @@ import ballerina/mysql;
 import ballerina/observe;
 import ballerina/runtime;
 
-
+// Type Marks is created to represent a set of marks.
 type Marks record {
     int studentId;
     int maths;
@@ -39,7 +39,7 @@ listener http:Listener marksServiceListener = new(9191);
 
 service MarksData on marksServiceListener {
     @http:ResourceConfig {
-        methods:["GET"],
+        methods: ["GET"],
         path: "/getMarks/{stuId}"
     }
     // Get marks resource used to get student's marks.
@@ -50,17 +50,17 @@ service MarksData on marksServiceListener {
         response.setJsonPayload(untaint result);
         var resResult = httpConnection->respond(response);
 
-        if (resResult is error){
+        if (resResult is error) {
             log:printError("Error sending response", err = resResult);
         }
     }
 }
 
- # `findMarks()`is a function to find a student's marks from the marks record database.
- #
- #  + stuId -  This is the id of the student.
- # + return - This function returns a JSON object. If data is added it returns JSON containing a status and id of student added.
- #            If data is not added , it returns the JSON containing a status and error message.
+# `findMarks()`is a function to find a student's marks from the marks record database.
+#
+#  + stuId -  This is the id of the student.
+# + return - This function returns a JSON object. If data is added it returns JSON containing a status and id of student added.
+#            If data is not added , it returns the JSON containing a status and error message.
 
 public function findMarks(int stuId) returns (json) {
     json status = {};
@@ -72,23 +72,21 @@ public function findMarks(int stuId) returns (json) {
     // Assigning data obtained from db to a table.
     table<Marks> dataTable = table {};
 
-    if (returnValue is table<Marks>){
-            dataTable = returnValue;
-    }
-    else {
-        log:printError("Error Detected",err= returnValue);
-        status = { "Status": "Select data from student table failed: "};
+    if (returnValue is table<Marks>) {
+        dataTable = returnValue;
+    } else {
+        log:printError("Error Detected", err = returnValue);
+        status = { "Status": "Select data from student table failed: " };
         return status;
     }
     // Converting the obtained data in table format to JSON data.
     var jsonConversionValue = json.convert(dataTable);
 
-    if (jsonConversionValue is json){
+    if (jsonConversionValue is json) {
         status = jsonConversionValue;
-    }
-    else {
-        status = { "Status": "Data Not available"};
-        log:printError("Error Detected",err = jsonConversionValue);
+    } else {
+        status = { "Status": "Data Not available" };
+        log:printError("Error Detected", err = jsonConversionValue);
     }
     io:println(status);
     return status;
