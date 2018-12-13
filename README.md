@@ -315,13 +315,11 @@ service studentData on studentServiceListener {
 
         if (requestReturn is error) {
             log:printError("Error", err = requestReturn);
-        }
-        else {
+        } else {
             var msg = requestReturn.getJsonPayload();
             if (msg is error) {
                 log:printError("Error", err = msg);
-            }
-            else {
+            } else {
                 result = msg;
             }
         }
@@ -329,8 +327,7 @@ service studentData on studentServiceListener {
         // Stopping the previously started span.
         if (firstSpan is int) {
             _ = observe:finishSpan(firstSpan);
-        }
-        else {
+        } else {
             log:printError("Error attaching span ", err = firstSpan);
         }
         //Sending the JSON to the client.
@@ -400,9 +397,7 @@ public function deleteData(int studentId) returns (json) {
     if (returnValue is int) {
         if (returnValue != 1) {
             status = { "Status": "Data Not Found" };
-        }
-
-        else {
+        } else {
             status = { "Status": "Data Deleted Successfully" };
         }
 
