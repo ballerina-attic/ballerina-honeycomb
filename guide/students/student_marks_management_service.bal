@@ -29,8 +29,9 @@ type Marks record {
     int science;
 };
 
-// This service listener.
+// Listener for marks service.
 listener http:Listener marksServiceListener = new(9191);
+
 // Marks data service.
 @http:ServiceConfig {
     basePath: "/marks"

@@ -45,7 +45,7 @@ mysql:Client studentDB = new({
         dbOptions: { useSSL: false }
     });
 
-// This service listener.
+// Listener for the student service.
 listener http:Listener studentServiceListener = new(9292);
 
 // Student data service.
@@ -85,15 +85,11 @@ service studentData on studentServiceListener {
 
         }
 
-
-
-        // Send the response back to the client with the returned JSON value from insertData function.
-
-
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
         _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
 
+        // Send the response back to the client with the returned JSON value from insertData function.
         var result = httpConnection->respond(response);
         if (result is error) {
             // Log the error for the service maintainers.
@@ -114,13 +110,12 @@ service studentData on studentServiceListener {
         json status = {};
 
         int spanId2 = observe:startRootSpan("Database call span");
-        var returnValue = studentDB->select("SELECT * FROM student", Student, loadToMemory = true);
         //Sending a request to MySQL endpoint and getting a response with required data table.
+        var returnValue = studentDB->select("SELECT * FROM student", Student, loadToMemory = true);
         _ = observe:finishSpan(spanId2);
         // A table is declared with Student as its type.
         table<Student> dataTable = table{};
 
-        // Match operator used to check if the response returned value with one of the types below.
         if (returnValue is error) {
             io:println("Select data from student table failed");
         }
@@ -156,7 +151,7 @@ service studentData on studentServiceListener {
         }
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.requestCounts);
+        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
     }
 
     @http:ResourceConfig {
@@ -172,7 +167,7 @@ service studentData on studentServiceListener {
         io:println(studentData.errors);
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.requestCounts);
+        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
         log:printError("error test");
         response.setTextPayload("Test Error made");
         var result = httpConnection->respond(response);
@@ -272,8 +267,6 @@ public function insertData(string name, int age, int mobNo, string address) retu
     // Insert data to SQL database by invoking update action.
     var returnValue = studentDB->update(sqlString, name, age, mobNo, address);
 
-     //Use match operator to check the validity of the result from database.
-
     if (returnValue is int) {
         table<Student> result = getId(untaint mobNo);
         while (result.hasNext()) {
@@ -333,7 +326,7 @@ public function deleteData(int stuId) returns (json) {
 # `getId()` is a function to get the Id of the student added in latest.
 #
 # + mobNo - This is the mobile number of the student added which is passed as parameter to build up the query.
-# + return -This function returns either a table which has only one row of the student details or an error.
+# + return -This function returns a table with Student type.
 
 // Function to get the generated Id of the student recently added.
 public function getId(int mobNo) returns table<Student> {

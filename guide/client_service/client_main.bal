@@ -84,6 +84,7 @@ function isInteger(string input) returns boolean {
     return false;
 }
 
+// Function  to add students to database.
 function addStudent(http:Request req) {
     // Get student name, age mobile number, address.
     var name = io:readln("Enter Student name: ");
