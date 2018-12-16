@@ -64,8 +64,8 @@ public function main() {
 
 function isInteger(string input) returns boolean {
     string regEx = "\\d+";
-    boolean|error isInt =  input.matches(regEx);
-    if(isInt is error) {
+    boolean|error isInt = input.matches(regEx);
+    if (isInt is error) {
         log:printError("Error", err = isInt);
         return false;
     } else {
@@ -98,16 +98,16 @@ function addStudent(http:Request req) {
     // Send the request to students service and get the response from it.
     var resp = studentService->post("/records/addStudent", req);
 
-    if (resp is http:Response){
+    if (resp is http:Response) {
         var jsonMsg = resp.getJsonPayload();
-        if(jsonMsg is json){
-                string message = "Status: " + jsonMsg["Status"] .toString() + " Added Student Id :- " +
-                    jsonMsg["id"].toString();
-                // Extracting data from JSON received and displaying.
-                io:println(message);
+        if (jsonMsg is json) {
+            string message = "Status: " + jsonMsg["Status"] .toString() + " Added Student Id :- " +
+                jsonMsg["id"].toString();
+            // Extracting data from JSON received and displaying.
+            io:println(message);
         } else {
             log:printError("Error in JSON", err = jsonMsg);
-            }
+        }
 
     } else {
         log:printError("Error in response", err = resp);
@@ -118,21 +118,21 @@ function viewAllStudents() {
     // Sending a request to list down all students and get the response from it.
     var response = studentService->post("/records/viewAll", null);
 
-    if (response is http:Response ){
+    if (response is http:Response) {
         var jsonMsg = response.getJsonPayload();
 
-        if(jsonMsg is json){
+        if (jsonMsg is json) {
             string message = "";
 
-            if(jsonMsg.length() >=1){
+            if (jsonMsg.length() >= 1) {
                 int i = 0;
                 while (i < jsonMsg.length()) {
 
-                message = "Student Name: " + jsonMsg[i]["name"] .toString() + ", " + " Student Age: " +
-                jsonMsg[i]["age"] .toString();
+                    message = "Student Name: " + jsonMsg[i]["name"] .toString() + ", " + " Student Age: " +
+                        jsonMsg[i]["age"] .toString();
 
-                io:println(message);
-                i += 1;
+                    io:println(message);
+                    i += 1;
                 }
             } else {
                 // Notify user if no records are available.
@@ -142,11 +142,11 @@ function viewAllStudents() {
 
         } else {
             log:printError("Error ", err = jsonMsg);
-          }
+        }
 
     } else {
         log:printError("Error ", err = response);
-        }
+    }
 }
 
 function deleteStudent() {
@@ -154,16 +154,16 @@ function deleteStudent() {
     string id = io:readln("Enter student id: ");
 
     // Request made to find the student with the given id and get the response from it.
-    var resp = studentService->get("/records/deleteStu/" + id );
+    var resp = studentService->get("/records/deleteStu/" + id);
 
-    if (resp is http:Response){
+    if (resp is http:Response) {
         var jsonMsg = resp.getJsonPayload();
-            if(jsonMsg is json){
+        if (jsonMsg is json) {
             string message = jsonMsg["Status"].toString();
-            io:println("\n"+ message + "\n");
-            } else {
-                log:printError("Error ", err = jsonMsg);
-            }
+            io:println("\n" + message + "\n");
+        } else {
+            log:printError("Error ", err = jsonMsg);
+        }
     }
 
 }
@@ -171,11 +171,11 @@ function deleteStudent() {
 function makeError() {
     var response = studentService->get("/records/testError");
 
-    if (response is http:Response){
+    if (response is http:Response) {
         var msg = response.getTextPayload();
 
-        if (msg is string){
-            io:println("\n"+ msg + "\n");
+        if (msg is string) {
+            io:println("\n" + msg + "\n");
         } else {
             log:printError("Error", err = msg);
         }
@@ -190,24 +190,25 @@ function getMarks() {
     // Request made to get the marks of the student with given id and get the response from it.
     var response = studentService->get("/records/getMarks/" + id);
 
-    if (response is http:Response){
+    if (response is http:Response) {
         var jsonMsg = response.getJsonPayload();
 
-        if(jsonMsg is json){
+        if (jsonMsg is json) {
             string message = "";
             // Validate to check if student with given ID exist in the system.
             if (jsonMsg.length() >= 1) {
-            message = "Maths: " + jsonMsg[0]["maths"] .toString() + " English: " + jsonMsg[0]["english"] .toString() +
-            " Science: " + jsonMsg[0]["science"] .toString();
+                message = "Maths: " + jsonMsg[0]["maths"] .toString() + " English: " + jsonMsg[0]["english"] .toString()
+                    +
+                    " Science: " + jsonMsg[0]["science"] .toString();
 
             } else {
                 message = "Data not available. Check if student's mark is added or student might not be in our system.";
             }
-            io:println("\n"+ message + "\n");
+            io:println("\n" + message + "\n");
         } else {
             log:printError("Error ", err = jsonMsg);
         }
     } else {
-            log:printError("Error ", err = response);
+        log:printError("Error ", err = response);
     }
 }
