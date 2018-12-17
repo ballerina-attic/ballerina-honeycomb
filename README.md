@@ -420,6 +420,7 @@ public function getId(int mobNo) returns table<Student> {
 
     table<Student> dataTable = table{};
     if (ret is error) {
+    log:printError("Error ", err = ret);
     } else {
         dataTable = ret;
     }

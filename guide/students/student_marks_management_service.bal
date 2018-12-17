@@ -49,7 +49,6 @@ service MarksData on marksServiceListener {
         // Pass the obtained JSON object to the requested client.
         response.setJsonPayload(untaint result);
         var resResult = httpConnection->respond(response);
-
         if (resResult is error) {
             log:printError("Error sending response", err = resResult);
         }

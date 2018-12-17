@@ -71,7 +71,6 @@ service studentData on studentServiceListener {
 
         if (payloadJson is json) {
             //Converting the payload to Student type.
-
             Student|error studentDetails = Student.convert(payloadJson);
 
             if (studentDetails is Student) {
@@ -84,7 +83,6 @@ service studentData on studentServiceListener {
             }
 
         }
-
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
         _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
@@ -323,6 +321,7 @@ public function getId(int mobNo) returns table<Student> {
 
     table<Student> dataTable = table{};
     if (ret is error) {
+        log:printError("Error ", err = ret);
     } else {
         dataTable = ret;
     }
