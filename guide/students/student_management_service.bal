@@ -31,8 +31,7 @@ type Student record {
 };
 
 // Endpoint for marks details client.
-http:Client marksServiceEP = new("http://localhost:9191",
-    config = { httpVersion: "2.0" });
+http:Client marksServiceEP = new("http://localhost:9191");
 
 
 // Endpoint for MySQL client.

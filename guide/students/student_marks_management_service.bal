@@ -88,7 +88,6 @@ public function findMarks(int stuId) returns (json) {
         status = { "Status": "Data Not available" };
         log:printError("Error Detected", err = jsonConversionValue);
     }
-    io:println(status);
     return status;
 }
 
