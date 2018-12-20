@@ -20,19 +20,22 @@ function testingMockError() {
 }
 
 @test:Config
+// Function to test GET resource 'deleteStu'.
 function invalidDataDeletion() {
     http:Request request;
     // Send 'GET' request and obtain the response.
     var response = studentService->get("/records/deleteStu/9999");
     if (response is http:Response) {
         // Expected response JSON is as below.
-        var res = response.getJsonPayload();
+        var resultJson = response.getJsonPayload();
 
-        if (res is json) {
-            test:assertEquals(res.toString(), "{\"Status\":\"Data Not Found\"}", msg = "Test error success");
+        if (resultJson is json) {
+            test:assertEquals(resultJson.toString(), "{\"Status\":\"Data Not Found\"}", msg = "Test error success");
         }
         else {
-            log:printError("Error", err = res);
+            log:printError("Error in fetching JSON from response", err = resultJson);
         }
+    } else {
+        log:printError("Error in obtained response", err = response);
     }
 }

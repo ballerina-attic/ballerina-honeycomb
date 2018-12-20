@@ -18,6 +18,7 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/log;
 
+// Host name for the student administration system server.
 http:Client studentService = new("http://localhost:9292");
 
 public function main() {
@@ -40,17 +41,15 @@ public function main() {
             io:println();
             continue;
         }
-
         var intOperation = int.convert(choice);
-
         if (intOperation is int) {
             io:println(intOperation);
             operation = intOperation;
+        } else {
+            log:printError("Error in converting user selected option to int type", err = intOperation);
         }
-
         // Program runs until the user inputs 6 to terminate the process.
         match operation {
-
             1 => addStudent(req);
             2 => viewAllStudents();
             3 => deleteStudent();
@@ -62,11 +61,12 @@ public function main() {
     }
 }
 
+// Function to check if an input is integer
 function isInteger(string input) returns boolean {
     string regEx = "\\d+";
     boolean|error isInt = input.matches(regEx);
     if (isInt is error) {
-        log:printError("Error", err = isInt);
+        log:printError("Error in checking int type of " + input, err = isInt);
         return false;
     } else {
         return isInt;
@@ -74,14 +74,13 @@ function isInteger(string input) returns boolean {
 
 }
 
-// Function  to add students to database.
+// Function  to add students to the database.
 function addStudent(http:Request req) {
     // Get student name, age mobile number, address.
     var name = io:readln("Enter Student name: ");
     var age = io:readln("Enter Student age: ");
     var mobile = io:readln("Enter mobile number: ");
     var add = io:readln("Enter Student address: ");
-
     var ageAsInt = int.convert(age);
     var mobNoAsInt = int.convert(mobile);
 
@@ -91,7 +90,7 @@ function addStudent(http:Request req) {
         req.setJsonPayload(jsonMsg);
 
     } else {
-        io:println("Adding students failed");
+        log:printError("Error in converting age and mobile number to int", err = ageAsInt);
         return;
     }
 
@@ -99,25 +98,25 @@ function addStudent(http:Request req) {
     var resp = studentService->post("/records/addStudent", req);
 
     if (resp is http:Response) {
+        // Extracting data from JSON received.
         var jsonMsg = resp.getJsonPayload();
         if (jsonMsg is json) {
             string message = "Status: " + jsonMsg["Status"] .toString() + " Added Student Id :- " +
                 jsonMsg["id"].toString();
-            // Extracting data from JSON received and displaying.
             io:println(message);
         } else {
-            log:printError("Error in JSON", err = jsonMsg);
+            log:printError("Error in extracting JSON from response", err = jsonMsg);
         }
 
     } else {
-        log:printError("Error in response", err = resp);
+        log:printError("Error in obtained response", err = resp);
     }
 }
 
+// Function  to view all student's details to the database.
 function viewAllStudents() {
     // Sending a request to list down all students and get the response from it.
     var response = studentService->post("/records/viewAll", null);
-
     if (response is http:Response) {
         var jsonMsg = response.getJsonPayload();
 
@@ -141,14 +140,15 @@ function viewAllStudents() {
             }
 
         } else {
-            log:printError("Error ", err = jsonMsg);
+            log:printError("Error in extracting JSON from response", err = jsonMsg);
         }
 
     } else {
-        log:printError("Error ", err = response);
+        log:printError("Error in obtained response", err = resp);
     }
 }
 
+// Function to delete a student's data from the system.
 function deleteStudent() {
     // Get student id.
     string id = io:readln("Enter student id: ");
@@ -162,37 +162,37 @@ function deleteStudent() {
             string message = jsonMsg["Status"].toString();
             io:println("\n" + message + "\n");
         } else {
-            log:printError("Error ", err = jsonMsg);
+            log:printError("Error in extracting JSON from response", err = jsonMsg);
         }
+    } else {
+        log:printError("Error in obtained response", err = resp);
     }
 
 }
 
+// Function to make a mock error in the system for observability purpose.
 function makeError() {
     var response = studentService->get("/records/testError");
-
     if (response is http:Response) {
         var msg = response.getTextPayload();
-
         if (msg is string) {
             io:println("\n" + msg + "\n");
         } else {
-            log:printError("Error", err = msg);
+            log:printError("Error in fetching text from response", err = msg);
         }
     } else {
-        log:printError("Error", err = response);
+        log:printError("Error in obtained response", err = response);
     }
 }
 
+// Function to fetch marks details of a student from the system.
 function getMarks() {
-    // Get student id.
+    // Get student ID.
     var id = io:readln("Enter student id: ");
     // Request made to get the marks of the student with given id and get the response from it.
     var response = studentService->get("/records/getMarks/" + id);
-
     if (response is http:Response) {
         var jsonMsg = response.getJsonPayload();
-
         if (jsonMsg is json) {
             string message = "";
             // Validate to check if student with given ID exist in the system.
@@ -200,15 +200,14 @@ function getMarks() {
                 message = "Maths: " + jsonMsg[0]["maths"] .toString() + " English: " + jsonMsg[0]["english"] .toString()
                     +
                     " Science: " + jsonMsg[0]["science"] .toString();
-
             } else {
                 message = "Data not available. Check if student's mark is added or student might not be in our system.";
             }
             io:println("\n" + message + "\n");
         } else {
-            log:printError("Error ", err = jsonMsg);
+            log:printError("Error in extracting JSON from response", err = jsonMsg);
         }
     } else {
-        log:printError("Error ", err = response);
+        log:printError("Error in obtained response ", err = response);
     }
 }

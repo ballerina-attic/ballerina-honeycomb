@@ -29,20 +29,20 @@ type Marks record {
     int science;
 };
 
-// Listener for marks service.
+// Port listener for marks service.
 listener http:Listener marksServiceListener = new(9191);
 
-// Marks data service.
+// Service configuration marks service.
 @http:ServiceConfig {
     basePath: "/marks"
 }
-
 service MarksData on marksServiceListener {
+    // Resource configuration for getting student's marks details from the system.
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/getMarks/{stuId}"
     }
-    // Get marks resource used to get student's marks.
+    // Get marks is a  resource used to get student's marks.
     resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
@@ -67,14 +67,12 @@ public function findMarks(int stuId) returns (json) {
     // Getting student marks of the given ID.
     // Invoking select operation in testDB.
     var returnValue = studentDB->select(sqlString, Marks, loadToMemory = true);
-
     // Assigning data obtained from db to a table.
     table<Marks> dataTable = table {};
-
     if (returnValue is table<Marks>) {
         dataTable = returnValue;
     } else {
-        log:printError("Error Detected", err = returnValue);
+        log:printError("Error in fetching data table from the database", err = returnValue);
         status = { "Status": "Select data from student table failed: " };
         return status;
     }
@@ -85,10 +83,7 @@ public function findMarks(int stuId) returns (json) {
         status = jsonConversionValue;
     } else {
         status = { "Status": "Data Not available" };
-        log:printError("Error Detected", err = jsonConversionValue);
+        log:printError("Error in converting the data table to JSON", err = jsonConversionValue);
     }
     return status;
 }
-
-
-
