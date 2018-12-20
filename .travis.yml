@@ -52,4 +52,6 @@ script:
 
 - ballerina init
 
+- cd students
+
 - ballerina test
