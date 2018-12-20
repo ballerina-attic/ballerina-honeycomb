@@ -87,7 +87,7 @@ reporter.compression.enabled=false
 ``
 - Clone and build the ballerina-zipkin-extension in the following repository [https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules.](https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules) 
 
-- After building this extension, navigate to `ballerina-zipkin-extension>/target/distribution/` and copy all the .jar files to your bre/lib folder in your Ballerina distribution.
+- After building this extension, navigate to `ballerina-zipkin-extension>/target/distribution/` and copy all the JAR files to your bre/lib folder in your Ballerina distribution.
 
 ### Development of student management and marks management services with Honeycomb
 
@@ -174,9 +174,7 @@ service studentData on studentServiceListener {
             if (studentDetails is Student) {
                 io:println(studentDetails);
                 // Calling the function insertData to update database.
-                json returnValue = insertData(untaint studentDetails.name, untaint studentDetails.age, untaint
-                    studentDetails.mobNo, untaint studentDetails.
-                    address);
+                json returnValue = insertData(untaint studentDetails.name, untaint studentDetails.age, untaint studentDetails.mobNo, untaint studentDetails.address);
                 response.setJsonPayload(untaint returnValue);
             }
 
@@ -420,7 +418,7 @@ public function getId(int mobNo) returns table<Student> {
 
     table<Student> dataTable = table{};
     if (ret is error) {
-    log:printError("Error ", err = ret);
+        log:printError("Error ", err = ret);
     } else {
         dataTable = ret;
     }
@@ -430,7 +428,6 @@ public function getId(int mobNo) returns table<Student> {
 ```
 
 Now we will look into the implementation of obtaining the marks of the students from database through another service.
-
 
 ##### student_marks_management_service.bal
 
@@ -480,13 +477,12 @@ service MarksData on marksServiceListener {
         path: "/getMarks/{stuId}"
     }
     // Get marks resource used to get student's marks.
-    resource function getMarks(http:Caller httpConnection, http:Request request, int stuId) {
+    resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
         // Pass the obtained JSON object to the requested client.
         response.setJsonPayload(untaint result);
-        var resResult = httpConnection->respond(response);
-
+        var resResult = caller->respond(response);
         if (resResult is error) {
             log:printError("Error sending response", err = resResult);
         }

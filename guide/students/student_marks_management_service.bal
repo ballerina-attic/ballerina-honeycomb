@@ -43,12 +43,12 @@ service MarksData on marksServiceListener {
         path: "/getMarks/{stuId}"
     }
     // Get marks resource used to get student's marks.
-    resource function getMarks(http:Caller httpConnection, http:Request request, int stuId) {
+    resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
         // Pass the obtained JSON object to the requested client.
         response.setJsonPayload(untaint result);
-        var resResult = httpConnection->respond(response);
+        var resResult = caller->respond(response);
         if (resResult is error) {
             log:printError("Error sending response", err = resResult);
         }

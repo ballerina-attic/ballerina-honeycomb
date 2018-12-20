@@ -3,8 +3,7 @@ import ballerina/http;
 import ballerina/test;
 import ballerina/log;
 
-http:Client studentService = new("http://localhost:9292",
-    config = { httpVersion: "2.0" });
+http:Client studentService = new("http://localhost:9292");
 
 
 @test:Config
@@ -14,19 +13,18 @@ function testingMockError() {
     http:Request request;
     // Send 'GET' request and obtain the response.
     var response = studentService->get("/records/testError");
-    if (response is http:Response){
+    if (response is http:Response) {
         var res = response.getTextPayload();
-        test:assertEquals(res,"Test Error made", msg = "Test error success");
+        test:assertEquals(res, "Test Error made", msg = "Test error success");
     }
-
 }
 
 @test:Config
 function invalidDataDeletion() {
     http:Request request;
     // Send 'GET' request and obtain the response.
-    var response =  studentService->get("/records/deleteStu/9999");
-    if (response is http:Response){
+    var response = studentService->get("/records/deleteStu/9999");
+    if (response is http:Response) {
         // Expected response JSON is as below.
         var res = response.getJsonPayload();
 

@@ -33,7 +33,6 @@ type Student record {
 // Endpoint for marks details client.
 http:Client marksServiceEP = new("http://localhost:9191");
 
-
 // Endpoint for MySQL client.
 mysql:Client studentDB = new({
         host: "localhost",
@@ -76,9 +75,7 @@ service studentData on studentServiceListener {
             if (studentDetails is Student) {
                 io:println(studentDetails);
                 // Calling the function insertData to update database.
-                json returnValue = insertData(untaint studentDetails.name, untaint studentDetails.age, untaint
-                    studentDetails.mobNo, untaint studentDetails.
-                    address);
+                json returnValue = insertData(untaint studentDetails.name, untaint studentDetails.age, untaint studentDetails.mobNo, untaint studentDetails.address);
                 response.setJsonPayload(untaint returnValue);
             }
 
