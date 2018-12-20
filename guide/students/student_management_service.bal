@@ -78,7 +78,6 @@ service studentData on studentServiceListener {
                 json returnValue = insertData(untaint studentDetails.name, untaint studentDetails.age, untaint studentDetails.mobNo, untaint studentDetails.address);
                 response.setJsonPayload(untaint returnValue);
             }
-
         }
         // The below function adds tags that are to be passed as metrics in the traces. These tags are added to the default ootb system span.
         _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
@@ -90,7 +89,6 @@ service studentData on studentServiceListener {
             // Log the error for the service maintainers.
             log:printError("Error responding to the client", err = result);
         }
-
     }
 
     @http:ResourceConfig {
