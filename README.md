@@ -481,7 +481,7 @@ service MarksData on marksServiceListener {
         methods: ["GET"],
         path: "/getMarks/{stuId}"
     }
-    // Get marks is a  resource used to get student's marks.
+    // Resource used to get student's marks.
     resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
@@ -610,7 +610,7 @@ function isInteger(string input) returns boolean {
 
 }
 
-// Function  to add students to the database.
+// Function to add students to the database.
 function addStudent(http:Request req) {
     // Get student name, age mobile number, address.
     var name = io:readln("Enter Student name: ");
@@ -634,7 +634,7 @@ function addStudent(http:Request req) {
     var resp = studentService->post("/records/addStudent", req);
 
     if (resp is http:Response) {
-        // Extracting data from JSON received.
+        // Extracting data from received JSON.
         var jsonMsg = resp.getJsonPayload();
         if (jsonMsg is json) {
             string message = "Status: " + jsonMsg["Status"] .toString() + " Added Student Id :- " +
@@ -649,7 +649,7 @@ function addStudent(http:Request req) {
     }
 }
 
-// Function  to view all student's details to the database.
+// Function to view all student's details.
 function viewAllStudents() {
     // Sending a request to list down all students and get the response from it.
     var response = studentService->post("/records/viewAll", null);
@@ -747,7 +747,6 @@ function getMarks() {
         log:printError("Error in obtained response ", err = response);
     }
 }
-
 
 ```
 

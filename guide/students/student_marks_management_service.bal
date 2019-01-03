@@ -42,7 +42,7 @@ service MarksData on marksServiceListener {
         methods: ["GET"],
         path: "/getMarks/{stuId}"
     }
-    // Get marks is a  resource used to get student's marks.
+    // Resource used to get student's marks.
     resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);

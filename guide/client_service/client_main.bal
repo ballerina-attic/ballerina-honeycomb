@@ -74,7 +74,7 @@ function isInteger(string input) returns boolean {
 
 }
 
-// Function  to add students to the database.
+// Function to add students to the database.
 function addStudent(http:Request req) {
     // Get student name, age mobile number, address.
     var name = io:readln("Enter Student name: ");
@@ -98,7 +98,7 @@ function addStudent(http:Request req) {
     var resp = studentService->post("/records/addStudent", req);
 
     if (resp is http:Response) {
-        // Extracting data from JSON received.
+        // Extracting data from received JSON.
         var jsonMsg = resp.getJsonPayload();
         if (jsonMsg is json) {
             string message = "Status: " + jsonMsg["Status"] .toString() + " Added Student Id :- " +
@@ -113,7 +113,7 @@ function addStudent(http:Request req) {
     }
 }
 
-// Function  to view all student's details to the database.
+// Function to view all student's details.
 function viewAllStudents() {
     // Sending a request to list down all students and get the response from it.
     var response = studentService->post("/records/viewAll", null);

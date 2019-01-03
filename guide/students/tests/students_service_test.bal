@@ -5,7 +5,6 @@ import ballerina/log;
 
 http:Client studentService = new("http://localhost:9292");
 
-
 @test:Config
 // Function to test GET resource 'testError'.
 function testingMockError() {
