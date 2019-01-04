@@ -29,20 +29,20 @@ type Marks record {
     int science;
 };
 
-// Listener for marks service.
+// Listener for the port of the marks service.
 listener http:Listener marksServiceListener = new(9191);
 
-// Marks data service.
+// Service configuration of the marks service.
 @http:ServiceConfig {
     basePath: "/marks"
 }
-
 service MarksData on marksServiceListener {
+    // Resource configuration for retrieving the marks of a student from the system.
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/getMarks/{stuId}"
     }
-    // Get marks resource used to get student's marks.
+    // Resource used to get student's marks.
     resource function getMarks(http:Caller caller, http:Request request, int stuId) {
         http:Response response = new;
         json result = findMarks(untaint stuId);
@@ -50,7 +50,7 @@ service MarksData on marksServiceListener {
         response.setJsonPayload(untaint result);
         var resResult = caller->respond(response);
         if (resResult is error) {
-            log:printError("Error sending response", err = resResult);
+            log:printError("Error in sending response to the client", err = resResult);
         }
     }
 }
@@ -67,14 +67,12 @@ public function findMarks(int stuId) returns (json) {
     // Getting student marks of the given ID.
     // Invoking select operation in testDB.
     var returnValue = studentDB->select(sqlString, Marks, loadToMemory = true);
-
     // Assigning data obtained from db to a table.
     table<Marks> dataTable = table {};
-
     if (returnValue is table<Marks>) {
         dataTable = returnValue;
     } else {
-        log:printError("Error Detected", err = returnValue);
+        log:printError("Error in fetching the data table from the database", err = returnValue);
         status = { "Status": "Select data from student table failed: " };
         return status;
     }
@@ -85,10 +83,7 @@ public function findMarks(int stuId) returns (json) {
         status = jsonConversionValue;
     } else {
         status = { "Status": "Data Not available" };
-        log:printError("Error Detected", err = jsonConversionValue);
+        log:printError("Error in converting the fetched data from tabular format to JSON.", err = jsonConversionValue);
     }
     return status;
 }
-
-
-
