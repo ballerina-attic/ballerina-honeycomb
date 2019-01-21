@@ -37,6 +37,11 @@ This system will illustrate the manipulation of student details in a school/coll
 - [MySQL](https://github.com/ballerina-guides/ballerina-honeycomb/blob/master/resources/testdb.sql)
 - A Text Editor or an IDE 
 
+### Optional Requirements
+- Ballerina IDE plugins ([IntelliJ IDEA](https://plugins.jetbrains.com/plugin/9520-ballerina), 
+    [VSCode](https://marketplace.visualstudio.com/items?itemName=ballerina.ballerina))
+    
+
 ## Implementation
 
 > If you want to skip the basics, you can download the GitHub repo and continue from the [Testing](#testing) section.
