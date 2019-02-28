@@ -86,6 +86,7 @@ reporter.compression.enabled=false
 ``
    $ ballerina init
 ``
+
 - Clone and build the ballerina-zipkin-extension in the following repository [https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules.](https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules) 
 
 - After building this extension, navigate to `ballerina-zipkin-extension>/target/distribution/` and copy all the JAR files to your bre/lib folder in your Ballerina distribution.
