@@ -20,6 +20,7 @@ import ballerina/log;
 import ballerina/mysql;
 import ballerina/observe;
 import ballerina/runtime;
+import ballerina/sql;
 
 // Type Student is created to store details of a student.
 type Student record {
@@ -39,7 +40,7 @@ mysql:Client studentDB = new({
         port: 3306,
         name: "testdb",
         username: "root",
-        password: "",
+        password: "root",
         dbOptions: { useSSL: false }
     });
 
@@ -60,7 +61,7 @@ service studentData on studentServiceListener {
         path: "/addStudent"
     }
     // Add Students resource used to add student records to the system.
-    resource function addStudents(http:Caller caller, http:Request request) {
+    resource function addStudents(http:Caller caller, http:Request request) returns error? {
         // Initialize an empty HTTP response message.
         studentData.requestCounts += 1;
         http:Response response = new;
@@ -84,8 +85,8 @@ service studentData on studentServiceListener {
             log:printError("Error obtaining the JSON payload", err = payloadJson);
         }
         // The below function adds tags to be passed as metrics in the message traces. These tags are added to the default system span.
-        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
+        check observe:addTagToSpan("tot_requests", string.convert(studentData.requestCounts));
+        check observe:addTagToSpan("error_counts", string.convert(studentData.errors));
 
         // Send the response back to the client with the returned JSON value from insertData function.
         var result = caller->respond(response);
@@ -101,7 +102,7 @@ service studentData on studentServiceListener {
         path: "/viewAll"
     }
     // View students resource is to get all the students details and send to the requested user.
-    resource function viewStudents(http:Caller caller, http:Request request) {
+    resource function viewStudents(http:Caller caller, http:Request request) returns error? {
         studentData.requestCounts += 1;
         int|error childSpanId = observe:startSpan("Obtain details span");
         http:Response response = new;
@@ -110,7 +111,7 @@ service studentData on studentServiceListener {
 
         // Sending a request to MySQL endpoint and getting a response with required data table.
         var returnValue = studentDB->select("SELECT * FROM student", Student, loadToMemory = true);
-        _ = observe:finishSpan(spanId2);
+        check observe:finishSpan(spanId2);
 
         // A table is declared with Student as its type.
         table<Student> dataTable = table{};
@@ -141,13 +142,13 @@ service studentData on studentServiceListener {
         }
 
         if (childSpanId is int) {
-            _ = observe:finishSpan(childSpanId);
+            check observe:finishSpan(childSpanId);
         } else {
             log:printError("Error attaching span ", err = childSpanId);
         }
         //The below function adds tags to be passed as metrics in the message traces. These tags are added to the default system span.
-        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
+        check observe:addTagToSpan("tot_requests", string.convert(studentData.requestCounts));
+        check observe:addTagToSpan("error_counts", string.convert(studentData.errors));
     }
 
     // Resource configuration for making a mock error to the system.
@@ -156,14 +157,14 @@ service studentData on studentServiceListener {
         path: "/testError"
     }
     // Resource to generate a mock error for testing purposes.
-    resource function testError(http:Caller caller, http:Request request) {
+    resource function testError(http:Caller caller, http:Request request) returns error? {
         studentData.requestCounts += 1;
         http:Response response = new;
         studentData.errors += 1;
         io:println(studentData.errors);
         // The below function adds tags to be passed as metrics in the message traces. These tags are added to the default system span.
-        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
+        check observe:addTagToSpan("tot_requests", string.convert(studentData.requestCounts));
+        check observe:addTagToSpan("error_counts", string.convert(studentData.errors));
         log:printError("error test");
         response.setTextPayload("Test Error made");
         var result = caller->respond(response);
@@ -178,7 +179,7 @@ service studentData on studentServiceListener {
         path: "/deleteStu/{studentId}"
     }
     // Delete Students resource for deleteing a student using id.
-    resource function deleteStudent(http:Caller caller, http:Request request, int studentId) {
+    resource function deleteStudent(http:Caller caller, http:Request request, int studentId) returns error? {
         studentData.requestCounts += 1;
         http:Response response = new;
         json status = {};
@@ -194,8 +195,8 @@ service studentData on studentServiceListener {
             log:printError("Error in sending response to the client", err = result);
         }
         // The below function adds tags to be passed as metrics in the message traces. These tags are added to the default system span.
-        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
+        check observe:addTagToSpan("tot_requests", string.convert(studentData.requestCounts));
+        check observe:addTagToSpan("error_counts", string.convert(studentData.errors));
     }
 
     // Resource configuration for getting the marks of a particular student.
@@ -204,7 +205,7 @@ service studentData on studentServiceListener {
         path: "/getMarks/{studentId}"
     }
     // Get marks resource for obtaining marks of a particular student.
-    resource function getMarks(http:Caller caller, http:Request request, int studentId) {
+    resource function getMarks(http:Caller caller, http:Request request, int studentId) returns error? {
         studentData.requestCounts += 1;
         http:Response response = new;
         json result = {};
@@ -226,7 +227,7 @@ service studentData on studentServiceListener {
 
         // Stopping the previously started span.
         if (firstSpan is int) {
-            _ = observe:finishSpan(firstSpan);
+            check observe:finishSpan(firstSpan);
         } else {
             log:printError("Error attaching span ", err = firstSpan);
         }
@@ -237,8 +238,8 @@ service studentData on studentServiceListener {
             log:printError("Error in sending response to the client", err = resResult);
         }
         // The below function adds tags to be passed as metrics in the message traces. These tags are added to the default system span.
-        _ = observe:addTagToSpan("tot_requests", <string>studentData.requestCounts);
-        _ = observe:addTagToSpan("error_counts", <string>studentData.errors);
+        check observe:addTagToSpan("tot_requests", string.convert(studentData.requestCounts));
+        check observe:addTagToSpan("error_counts", string.convert(studentData.errors));
     }
 }
 
@@ -259,14 +260,15 @@ public function insertData(string name, int age, int mobNo, string address) retu
 
     // Insert data to SQL database by invoking update action.
     var returnValue = studentDB->update(sqlString, name, age, mobNo, address);
-    if (returnValue is int) {
+    if (returnValue is sql:UpdateResult) {
         table<Student> result = getId(untaint mobNo);
         while (result.hasNext()) {
             var returnValue2 = result.getNext();
             if (returnValue2 is Student) {
                 uniqueId = returnValue2.id;
             } else {
-                log:printError("Error in obtaining a student ID from the database for the added student.", err = returnValue2);
+                log:printError("Error in obtaining a student ID from the database for the added student.", 
+                                err = returnValue2 is error ? returnValue2 : ());
             }
         }
 
@@ -296,8 +298,8 @@ public function deleteData(int studentId) returns (json) {
     var returnValue = studentDB->update(sqlString, studentId);
     io:println(returnValue);
 
-    if (returnValue is int) {
-        if (returnValue != 1) {
+    if (returnValue is sql:UpdateResult) {
+        if (returnValue.updatedRowCount != 1) {
             status = { "Status": "Data Not Found" };
         } else {
             status = { "Status": "Data Deleted Successfully" };

@@ -88,9 +88,8 @@ function addStudent(http:Request req) {
         // Create the request as JSON message.
         json jsonMsg = { "name": name, "age": ageAsInt, "mobNo": mobNoAsInt, "address": add, "id": 0 };
         req.setJsonPayload(jsonMsg);
-
     } else {
-        log:printError("Error in converting the age and the mobile number to integers.", err = ageAsInt);
+        log:printError("Error in converting the age and/or the mobile number to integers.");
         return;
     }
 
@@ -143,7 +142,7 @@ function viewAllStudents() {
         }
 
     } else {
-        log:printError("Error in obtained response", err = resp);
+        log:printError("Error in obtained response", err = response);
     }
 }
 
