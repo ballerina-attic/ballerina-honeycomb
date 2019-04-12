@@ -33,6 +33,7 @@ This system will illustrate the manipulation of student details in a school/coll
 ## Prerequisites
  
 - [Ballerina Distribution](https://ballerina.io/learn/getting-started/)
+- [Honeycomb Plan](https://www.honeycomb.io/)
 - A Text Editor or an IDE 
 > **Tip**: For a better development experience, install one of the following Ballerina IDE plugins: [VSCode](https://marketplace.visualstudio.com/items?itemName=ballerina.ballerina), [IntelliJ IDEA](https://plugins.jetbrains.com/plugin/9520-ballerina)
 - [Docker](https://docs.docker.com/engine/installation/)
@@ -55,9 +56,10 @@ This system will illustrate the manipulation of student details in a school/coll
                 ├── students
                 │   ├── student_management_service.bal
                 │   ├── student_marks_management_service.bal
-                ├── client_service
-                |         └── client_main.bal
-                └── ballerina.conf
+                |   └── ballerina.conf
+                └── client_service
+                         └── client_main.bal
+               
         
 
 - Create the above directories in your local machine, along with the empty `.bal` files.
@@ -89,7 +91,7 @@ reporter.compression.enabled=false
 
 - Clone and build the ballerina-zipkin-extension in the following repository [https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules.](https://github.com/ballerina-platform/ballerina-observability/tree/master/tracing-extensions/modules) 
 
-- After building this extension, navigate to `ballerina-zipkin-extension>/target/distribution/` and copy all the JAR files to your bre/lib folder in your Ballerina distribution.
+- After building this extension, navigate to `ballerina-zipkin-extension/target` and extract and copy the JAR files in `distribution.zip` to your `bre/lib` folder in your Ballerina distribution.
 
 ### Development of student management and marks management services with Honeycomb
 
@@ -511,7 +513,7 @@ public function findMarks(int stuId) returns (json) {
 You can start both services by opening a terminal, navigating to `ballerina-honeycomb/guide`, and executing the following command.
 
 ```
-$ ballerina run --config <path-to-conf>/ballerina.conf students
+$ ballerina run --config students/ballerina.conf students
 ```
 
  You need to start the honeycomb-opentracing-proxy. This can be done by using Docker. Docker is used to pull the image for honeycomb-opentracing-proxy.
